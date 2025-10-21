@@ -145,7 +145,7 @@ public class CollectorService {
                         .setTimestamp(Instant.ofEpochSecond(sensorEvent.getTimestamp().getSeconds(), sensorEvent.getTimestamp().getNanos()))
                         .setPayload(LightSensorAvro.newBuilder()
                                 .setLinkQuality(lightSensorEvent.getLinkQuality())
-                                .setLuminosityl(lightSensorEvent.getLuminosity())
+                                .setLuminosity(lightSensorEvent.getLuminosity())
                                 .build())
                         .build();
             }
