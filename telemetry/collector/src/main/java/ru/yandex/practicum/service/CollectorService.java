@@ -1,6 +1,7 @@
 package ru.yandex.practicum.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -10,6 +11,7 @@ import ru.yandex.practicum.kafka.telemetry.event.*;
 
 import java.time.Instant;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CollectorService {
@@ -23,10 +25,12 @@ public class CollectorService {
 
     public void sendSensorEvent(SensorEventProto sensorEvent) {
         kafkaTemplate.send(sensorTopic, sensorEvent.getHubId(), mapToRecord(sensorEvent));
+        log.info("Sending sensor event to topic: {}", sensorTopic);
     }
 
     public void sendHubEvent(HubEventProto hubEvent) {
         kafkaTemplate.send(hubTopic, hubEvent.getHubId(), mapToRecord(hubEvent));
+        log.info("Sending hub event to topic: {}", hubTopic);
     }
 
     private SpecificRecordBase mapToRecord(HubEventProto hubEvent) {
@@ -89,7 +93,10 @@ public class CollectorService {
                                 .build())
                         .build();
             }
-            case PAYLOAD_NOT_SET -> throw new IllegalArgumentException("Payload is not set");
+            case PAYLOAD_NOT_SET -> {
+                log.error("Payload not set for event: hubId={}", hubEvent.getHubId());
+                throw new IllegalArgumentException("Payload is not set");
+            }
         };
     }
 
@@ -158,7 +165,10 @@ public class CollectorService {
                                 .build())
                         .build();
             }
-            case PAYLOAD_NOT_SET -> throw new IllegalArgumentException("Payload is not set");
+            case PAYLOAD_NOT_SET -> {
+                log.error("Payload not set for event: hubId={}", sensorEvent.getHubId());
+                throw new IllegalArgumentException("Payload is not set");
+            }
         };
     }
 }
