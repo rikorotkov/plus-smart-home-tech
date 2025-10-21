@@ -62,39 +62,21 @@ public class CollectorService {
                         .setTimestamp(Instant.ofEpochSecond(hubEvent.getTimestamp().getSeconds(), hubEvent.getTimestamp().getNanos()))
                         .setPayload(ScenarioAddedEventAvro.newBuilder()
                                 .setName(scenarioAdded.getName())
-                                .setConditions(scenarioAdded.getConditionsList().stream()
-                                        .map(sc -> {
-                                            ScenarioConditionAvro.Builder conditionBuilder = ScenarioConditionAvro.newBuilder()
-                                                    .setSensorId(sc.getSensorId())
-                                                    .setType(ConditionTypeAvro.valueOf(sc.getType().name()))
-                                                    .setOperation(ConditionOperationAvro.valueOf(sc.getOperation().name()));
-
-                                            switch (sc.getValueCase()) {
-                                                case INT_VALUE:
-                                                    conditionBuilder.setValue(sc.getIntValue());
-                                                    break;
-                                                case BOOL_VALUE:
-                                                    conditionBuilder.setValue(sc.getBoolValue());
-                                                    break;
-                                                default:
-                                                    throw new IllegalArgumentException("Unknown value type in condition");
-                                            }
-
-                                            return conditionBuilder.build();
-                                        })
+                                .setConditions(scenarioAdded.getConditionList().stream()
+                                        .map(sc -> ScenarioConditionAvro.newBuilder()
+                                                .setSensorId(sc.getSensorId())
+                                                .setType(ConditionTypeAvro.valueOf(sc.getType().name()))
+                                                .setValue(sc.getValueCase() == ScenarioConditionProto.ValueCase.INT_VALUE ? sc.getIntValue() :
+                                                        sc.getValueCase() == ScenarioConditionProto.ValueCase.BOOL_VALUE ? sc.getBoolValue() : null)
+                                                .setOperation(ConditionOperationAvro.valueOf(sc.getOperation().name()))
+                                                .build())
                                         .toList())
-                                .setActions(scenarioAdded.getActionsList().stream()
-                                        .map(da -> {
-                                            DeviceActionAvro.Builder actionBuilder = DeviceActionAvro.newBuilder()
-                                                    .setSensorId(da.getSensorId())
-                                                    .setType(ActionTypeAvro.valueOf(da.getType().name()));
-
-                                            if (da.hasValue()) {
-                                                actionBuilder.setValue(da.getValue());
-                                            }
-
-                                            return actionBuilder.build();
-                                        })
+                                .setActions(scenarioAdded.getActionList().stream()
+                                        .map(da -> DeviceActionAvro.newBuilder()
+                                                .setSensorId(da.getSensorId())
+                                                .setType(ActionTypeAvro.valueOf(da.getType().name()))
+                                                .setValue(da.getValue())
+                                                .build())
                                         .toList())
                                 .build())
                         .build();
@@ -114,70 +96,72 @@ public class CollectorService {
     }
 
     private SpecificRecordBase mapToRecord(SensorEventProto sensorEvent) {
+
         SensorEventProto.PayloadCase payloadCase = sensorEvent.getPayloadCase();
         return switch (payloadCase) {
-            case TEMPERATURE_SENSOR -> {
-                TemperatureSensorProto temperatureSensor = sensorEvent.getTemperatureSensor();
+            case TEMPERATURE_SENSOR_EVENT -> {
+                TemperatureSensorProto temperatureSensorEvent = sensorEvent.getTemperatureSensorEvent();
                 yield SensorEventAvro.newBuilder()
                         .setId(sensorEvent.getId())
                         .setHubId(sensorEvent.getHubId())
                         .setTimestamp(Instant.ofEpochSecond(sensorEvent.getTimestamp().getSeconds(), sensorEvent.getTimestamp().getNanos()))
                         .setPayload(TemperatureSensorAvro.newBuilder()
-                                .setTemperatureC(temperatureSensor.getTemperatureC())
-                                .setTemperatureF(temperatureSensor.getTemperatureF())
+                                .setTemperatureC(temperatureSensorEvent.getTemperatureC())
+                                .setTemperatureF(temperatureSensorEvent.getTemperatureF())
                                 .build())
                         .build();
             }
-            case MOTION_SENSOR -> {
-                MotionSensorProto motionSensor = sensorEvent.getMotionSensor();
+            case MOTION_SENSOR_EVENT -> {
+                MotionSensorProto motionSensorEvent = sensorEvent.getMotionSensorEvent();
                 yield SensorEventAvro.newBuilder()
                         .setId(sensorEvent.getId())
                         .setHubId(sensorEvent.getHubId())
                         .setTimestamp(Instant.ofEpochSecond(sensorEvent.getTimestamp().getSeconds(), sensorEvent.getTimestamp().getNanos()))
                         .setPayload(MotionSensorAvro.newBuilder()
-                                .setLinkQuality(motionSensor.getLinkQuality())
-                                .setMotion(motionSensor.getMotion())
-                                .setVoltage(motionSensor.getVoltage())
+                                .setLinkQuality(motionSensorEvent.getLinkQuality())
+                                .setMotion(motionSensorEvent.getMotion())
+                                .setVoltage(motionSensorEvent.getVoltage())
                                 .build())
                         .build();
             }
-            case CLIMATE_SENSOR -> {
-                ClimateSensorProto climateSensor = sensorEvent.getClimateSensor();
+            case CLIMATE_SENSOR_EVENT -> {
+                ClimateSensorProto climateSensorEvent = sensorEvent.getClimateSensorEvent();
                 yield SensorEventAvro.newBuilder()
                         .setId(sensorEvent.getId())
                         .setHubId(sensorEvent.getHubId())
                         .setTimestamp(Instant.ofEpochSecond(sensorEvent.getTimestamp().getSeconds(), sensorEvent.getTimestamp().getNanos()))
                         .setPayload(ClimateSensorAvro.newBuilder()
-                                .setTemperatureC(climateSensor.getTemperatureC())
-                                .setHumidity(climateSensor.getHumidity())
-                                .setCo2Level(climateSensor.getCo2Level())
+                                .setTemperatureC(climateSensorEvent.getTemperatureC())
+                                .setHumidity(climateSensorEvent.getHumidity())
+                                .setCo2Level(climateSensorEvent.getCo2Level())
                                 .build())
                         .build();
             }
-            case LIGHT_SENSOR -> {
-                LightSensorProto lightSensor = sensorEvent.getLightSensor();
+            case LIGHT_SENSOR_EVENT -> {
+                LightSensorProto lightSensorEvent = sensorEvent.getLightSensorEvent();
                 yield SensorEventAvro.newBuilder()
                         .setId(sensorEvent.getId())
                         .setHubId(sensorEvent.getHubId())
                         .setTimestamp(Instant.ofEpochSecond(sensorEvent.getTimestamp().getSeconds(), sensorEvent.getTimestamp().getNanos()))
                         .setPayload(LightSensorAvro.newBuilder()
-                                .setLinkQuality(lightSensor.getLinkQuality())
-                                .setLuminosity(lightSensor.getLuminosity())
+                                .setLinkQuality(lightSensorEvent.getLinkQuality())
+                                .setLuminosityl(lightSensorEvent.getLuminosity())
                                 .build())
                         .build();
             }
-            case SWITCH_SENSOR -> {
-                SwitchSensorProto switchSensor = sensorEvent.getSwitchSensor();
+            case SWITCH_SENSOR_EVENT -> {
+                SwitchSensorProto switchSensorEvent = sensorEvent.getSwitchSensorEvent();
                 yield SensorEventAvro.newBuilder()
                         .setId(sensorEvent.getId())
                         .setHubId(sensorEvent.getHubId())
                         .setTimestamp(Instant.ofEpochSecond(sensorEvent.getTimestamp().getSeconds(), sensorEvent.getTimestamp().getNanos()))
                         .setPayload(SwitchSensorAvro.newBuilder()
-                                .setState(switchSensor.getState())
+                                .setState(switchSensorEvent.getState())
                                 .build())
                         .build();
             }
             case PAYLOAD_NOT_SET -> throw new IllegalArgumentException("Payload is not set");
         };
     }
+
 }
