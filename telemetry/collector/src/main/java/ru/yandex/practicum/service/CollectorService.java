@@ -25,12 +25,10 @@ public class CollectorService {
 
     public void sendSensorEvent(SensorEventProto sensorEvent) {
         kafkaTemplate.send(sensorTopic, sensorEvent.getHubId(), mapToRecord(sensorEvent));
-        log.info("Sending sensor event to topic: {}", sensorTopic);
     }
 
     public void sendHubEvent(HubEventProto hubEvent) {
         kafkaTemplate.send(hubTopic, hubEvent.getHubId(), mapToRecord(hubEvent));
-        log.info("Sending hub event to topic: {}", hubTopic);
     }
 
     private SpecificRecordBase mapToRecord(HubEventProto hubEvent) {
@@ -64,7 +62,7 @@ public class CollectorService {
                         .setTimestamp(Instant.ofEpochSecond(hubEvent.getTimestamp().getSeconds(), hubEvent.getTimestamp().getNanos()))
                         .setPayload(ScenarioAddedEventAvro.newBuilder()
                                 .setName(scenarioAdded.getName())
-                                .setConditions(scenarioAdded.getScenarioConditionsList().stream()
+                                .setConditions(scenarioAdded.getConditionsList().stream()
                                         .map(sc -> ScenarioConditionAvro.newBuilder()
                                                 .setSensorId(sc.getSensorId())
                                                 .setType(ConditionTypeAvro.valueOf(sc.getType().name()))
@@ -73,7 +71,7 @@ public class CollectorService {
                                                 .setOperation(ConditionOperationAvro.valueOf(sc.getOperation().name()))
                                                 .build())
                                         .toList())
-                                .setActions(scenarioAdded.getScenarioActionsList().stream()
+                                .setActions(scenarioAdded.getActionsList().stream()
                                         .map(da -> DeviceActionAvro.newBuilder()
                                                 .setSensorId(da.getSensorId())
                                                 .setType(ActionTypeAvro.valueOf(da.getType().name()))
@@ -93,10 +91,7 @@ public class CollectorService {
                                 .build())
                         .build();
             }
-            case PAYLOAD_NOT_SET -> {
-                log.error("Payload not set for event: hubId={}", hubEvent.getHubId());
-                throw new IllegalArgumentException("Payload is not set");
-            }
+            case PAYLOAD_NOT_SET -> throw new IllegalArgumentException("Payload is not set");
         };
     }
 
@@ -104,8 +99,8 @@ public class CollectorService {
 
         SensorEventProto.PayloadCase payloadCase = sensorEvent.getPayloadCase();
         return switch (payloadCase) {
-            case TEMPERATURE_SENSOR_EVENT -> {
-                TemperatureSensorProto temperatureSensorEvent = sensorEvent.getTemperatureSensorEvent();
+            case TEMPERATURE_SENSOR -> {
+                TemperatureSensorProto temperatureSensorEvent = sensorEvent.getTemperatureSensor();
                 yield SensorEventAvro.newBuilder()
                         .setId(sensorEvent.getId())
                         .setHubId(sensorEvent.getHubId())
@@ -116,8 +111,8 @@ public class CollectorService {
                                 .build())
                         .build();
             }
-            case MOTION_SENSOR_EVENT -> {
-                MotionSensorProto motionSensorEvent = sensorEvent.getMotionSensorEvent();
+            case MOTION_SENSOR -> {
+                MotionSensorProto motionSensorEvent = sensorEvent.getMotionSensor();
                 yield SensorEventAvro.newBuilder()
                         .setId(sensorEvent.getId())
                         .setHubId(sensorEvent.getHubId())
@@ -129,8 +124,8 @@ public class CollectorService {
                                 .build())
                         .build();
             }
-            case CLIMATE_SENSOR_EVENT -> {
-                ClimateSensorProto climateSensorEvent = sensorEvent.getClimateSensorEvent();
+            case CLIMATE_SENSOR -> {
+                ClimateSensorProto climateSensorEvent = sensorEvent.getClimateSensor();
                 yield SensorEventAvro.newBuilder()
                         .setId(sensorEvent.getId())
                         .setHubId(sensorEvent.getHubId())
@@ -142,8 +137,8 @@ public class CollectorService {
                                 .build())
                         .build();
             }
-            case LIGHT_SENSOR_EVENT -> {
-                LightSensorProto lightSensorEvent = sensorEvent.getLightSensorEvent();
+            case LIGHT_SENSOR -> {
+                LightSensorProto lightSensorEvent = sensorEvent.getLightSensor();
                 yield SensorEventAvro.newBuilder()
                         .setId(sensorEvent.getId())
                         .setHubId(sensorEvent.getHubId())
@@ -154,8 +149,8 @@ public class CollectorService {
                                 .build())
                         .build();
             }
-            case SWITCH_SENSOR_EVENT -> {
-                SwitchSensorProto switchSensorEvent = sensorEvent.getSwitchSensorEvent();
+            case SWITCH_SENSOR -> {
+                SwitchSensorProto switchSensorEvent = sensorEvent.getSwitchSensor();
                 yield SensorEventAvro.newBuilder()
                         .setId(sensorEvent.getId())
                         .setHubId(sensorEvent.getHubId())
@@ -165,10 +160,7 @@ public class CollectorService {
                                 .build())
                         .build();
             }
-            case PAYLOAD_NOT_SET -> {
-                log.error("Payload not set for event: hubId={}", sensorEvent.getHubId());
-                throw new IllegalArgumentException("Payload is not set");
-            }
+            case PAYLOAD_NOT_SET -> throw new IllegalArgumentException("Payload is not set");
         };
     }
 }
