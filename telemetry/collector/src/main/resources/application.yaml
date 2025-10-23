@@ -1,0 +1,9 @@
+spring:
+  kafka:
+    bootstrap-server: "localhost:9092"
+topic:
+  hub-event: "telemetry.hubs.v1"
+  sensor-event: "telemetry.sensors.v1"
+grpc:
+  server:
+    port: 59091
