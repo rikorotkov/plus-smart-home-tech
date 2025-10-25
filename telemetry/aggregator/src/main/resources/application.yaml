@@ -5,7 +5,7 @@ spring:
       key-serializer: "org.apache.kafka.common.serialization.StringSerializer"
       value-serializer: "ru.practicum.avro.serialization.AvroSerializer"
     consumer:
-      group-id: "snapshot.group"
+      group-id: "snapshot.aggregator.group"
       key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
       value-deserializer: "ru.practicum.avro.deserialization.SensorEventDeserializer"
 topic:

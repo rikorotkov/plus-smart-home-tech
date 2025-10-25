@@ -10,9 +10,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Sensor {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @Column(name = "hub_id", length = Integer.MAX_VALUE)
     private String hubId;
