@@ -37,7 +37,6 @@ public class AggregationService {
                 .build());
         SensorStateAvro sensorStateAvro = sensorsSnapshotAvro.getSensorsState().get(event.getId());
 
-        
         if (sensorStateAvro != null && sensorStateAvro.getData().equals(event.getPayload())) {
             return;
         }
