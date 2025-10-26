@@ -1,4 +1,4 @@
-package ru.yandex.practicum.listener;
+package ru.yandex.practicum.listner;
 
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;

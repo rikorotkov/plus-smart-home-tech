@@ -1,15 +1,13 @@
 spring:
   kafka:
-    bootstrap-servers: "localhost:9092"
+    bootstrap-server: "localhost:9092"
     producer:
       key-serializer: "org.apache.kafka.common.serialization.StringSerializer"
       value-serializer: "ru.practicum.avro.serialization.AvroSerializer"
     consumer:
       group-id: "snapshot.aggregator.group"
-      enable-auto-commit: false
       key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
       value-deserializer: "ru.practicum.avro.deserialization.SensorEventDeserializer"
-
 topic:
   snapshot: "telemetry.snapshots.v1"
   sensor-event: "telemetry.sensors.v1"

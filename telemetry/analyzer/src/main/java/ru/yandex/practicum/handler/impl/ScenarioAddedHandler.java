@@ -47,19 +47,13 @@ public class ScenarioAddedHandler implements HubEventHandler {
                             .build();
                 }));
 
-        Scenario scenario = scenarioRepository.findByHubIdAndName(hubId, scenarioName)
-                .map(existing -> {
-                    existing.setActions(actions);
-                    existing.setConditions(conditions);
-                    return existing;
-                })
-                .orElseGet(() -> Scenario.builder()
-                        .hubId(hubId)
-                        .name(scenarioName)
-                        .actions(actions)
-                        .conditions(conditions)
-                        .build());
+        Scenario scenario = Scenario.builder()
+                .hubId(hubId)
+                .name(scenarioName)
+                .actions(actions)
+                .conditions(conditions)
+                .build();
 
-        scenarioRepository.save(scenario);
+        scenarioRepository.saveAndFlush(scenario);
     }
 }

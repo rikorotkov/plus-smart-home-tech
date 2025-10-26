@@ -28,11 +28,10 @@ public class ScenarioRemovedHandler implements HubEventHandler {
         ScenarioRemovedEventAvro scenarioRemovedEventAvro = (ScenarioRemovedEventAvro) event.getPayload();
         String name = scenarioRemovedEventAvro.getName();
 
-        scenarioRepository.findByHubIdAndName(event.getHubId(), name)
-                .ifPresent(scenario -> {
-                    conditionRepository.deleteAll(scenario.getConditions().values());
-                    actionRepository.deleteAll(scenario.getActions().values());
-                    scenarioRepository.delete(scenario);
-                });
+        Scenario scenario = scenarioRepository.findByHubIdAndName(event.getHubId(), name).orElseThrow();
+
+        conditionRepository.deleteAll(scenario.getConditions().values());
+        actionRepository.deleteAll(scenario.getActions().values());
+        scenarioRepository.delete(scenario);
     }
 }
