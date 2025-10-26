@@ -1,4 +1,4 @@
-package ru.yandex.practicum.listner;
+package ru.yandex.practicum.listener;
 
 import lombok.RequiredArgsConstructor;
 import net.devh.boot.grpc.client.inject.GrpcClient;
