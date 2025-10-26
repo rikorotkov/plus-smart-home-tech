@@ -1,6 +1,7 @@
 package ru.yandex.practicum.listener;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -16,10 +17,12 @@ import ru.yandex.practicum.repository.ConditionRepository;
 import ru.yandex.practicum.repository.ScenarioRepository;
 import ru.yandex.practicum.repository.SensorRepository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SnapshotListener {
@@ -35,24 +38,26 @@ public class SnapshotListener {
     @KafkaListener(topics = "${topic.snapshot}", containerFactory = "snapshotListenerFactory")
     public void listenSnapshots(SensorsSnapshotAvro sensorsSnapshotAvro) {
         String hubId = sensorsSnapshotAvro.getHubId();
+        Instant snapshotTimestamp = Instant.now();
+
         List<Scenario> scenarios = scenarioRepository.findByHubId(hubId);
         Map<String, SensorStateAvro> sensorsState = sensorsSnapshotAvro.getSensorsState();
 
-        scenarios.forEach(
-                scenario -> {
-                    boolean allMatch = scenario.getConditions().entrySet().stream()
-                            .allMatch(entry -> {
-                                String sensorId = entry.getKey();
-                                Condition condition = entry.getValue();
-                                SensorStateAvro sensorStateAvro = sensorsState.get(sensorId);
-                                return sensorsState != null && ifConditionMatch(condition, sensorStateAvro);
-                            });
-                    if (allMatch) {
-                        Map<String, Action> actions = scenario.getActions();
-                        String scenarioName = scenario.getName();
-                        sendActionRequest(actions, hubId, scenarioName);
-                    }
-                });
+        scenarios.forEach(scenario -> {
+            boolean allMatch = scenario.getConditions().entrySet().stream()
+                    .allMatch(entry -> {
+                        String sensorId = entry.getKey();
+                        Condition condition = entry.getValue();
+                        SensorStateAvro sensorStateAvro = sensorsState.get(sensorId);
+                        return sensorsState != null && ifConditionMatch(condition, sensorStateAvro);
+                    });
+            if (allMatch) {
+                Map<String, Action> actions = scenario.getActions();
+                String scenarioName = scenario.getName();
+                sendActionRequest(actions, hubId, scenarioName);
+            }
+        });
+         log.debug("Processed snapshot for hub {} at {}", hubId, snapshotTimestamp);
     }
 
     private void sendActionRequest(Map<String, Action> actions, String hubId, String scenarioName) {
