@@ -3,9 +3,9 @@ package ru.yandex.practicum.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.config.KafkaTopicsProperties;
 import ru.yandex.practicum.grpc.telemetry.event.*;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 
@@ -16,19 +16,15 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class CollectorService {
 
-    @Value("${topic.sensor-event}")
-    private String sensorTopic = "telemetry.sensors.v1";
-    @Value("${topic.hub-event}")
-    private String hubTopic = "telemetry.hubs.v1";
-
     private final KafkaTemplate<String, SpecificRecordBase> kafkaTemplate;
+    private final KafkaTopicsProperties topics;
 
     public void sendSensorEvent(SensorEventProto sensorEvent) {
-        kafkaTemplate.send(sensorTopic, sensorEvent.getHubId(), mapToRecord(sensorEvent));
+        kafkaTemplate.send(topics.getSensorEvent(), sensorEvent.getHubId(), mapToRecord(sensorEvent));
     }
 
     public void sendHubEvent(HubEventProto hubEvent) {
-        kafkaTemplate.send(hubTopic, hubEvent.getHubId(), mapToRecord(hubEvent));
+        kafkaTemplate.send(topics.getHubEvent(), hubEvent.getHubId(), mapToRecord(hubEvent));
     }
 
     private SpecificRecordBase mapToRecord(HubEventProto hubEvent) {
