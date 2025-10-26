@@ -12,6 +12,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "scenarios")
 public class Scenario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

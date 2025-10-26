@@ -7,8 +7,9 @@ import lombok.*;
 @Setter
 @Entity
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "conditions")
 public class Condition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
