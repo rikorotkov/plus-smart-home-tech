@@ -36,25 +36,34 @@ public class AggregationService {
             SensorsSnapshotAvro sensorsSnapshotAvro = snapshots.computeIfAbsent(event.getHubId(), key ->
                     SensorsSnapshotAvro.newBuilder()
                             .setHubId(key)
-                            .setTimestamp(Instant.ofEpochSecond(event.getTimestamp().getEpochSecond(), event.getTimestamp().getNano()))
+                            .setTimestamp(event.getTimestamp())
                             .setSensorsState(new ConcurrentHashMap<>())
                             .build()
             );
 
-            SensorStateAvro sensorStateAvro = sensorsSnapshotAvro.getSensorsState().get(event.getId());
+            SensorStateAvro currentState = sensorsSnapshotAvro.getSensorsState().get(event.getId());
+            Instant eventTs = event.getTimestamp();
+            Instant storedTs = currentState != null ? currentState.getTimestamp() : null;
 
-            if (sensorStateAvro != null && sensorStateAvro.getData().equals(event.getPayload())) {
+            if (storedTs != null && eventTs.isBefore(storedTs)) {
+                log.debug("Ignoring old event {} (eventTs={}, storedTs={})", event.getId(), eventTs, storedTs);
                 ack.acknowledge();
                 return;
             }
 
-            SensorStateAvro stateAvro = SensorStateAvro.newBuilder()
+            if (currentState != null && currentState.getData().equals(event.getPayload())) {
+                log.debug("Ignoring duplicate event {}", event.getId());
+                ack.acknowledge();
+                return;
+            }
+
+            SensorStateAvro newState = SensorStateAvro.newBuilder()
                     .setTimestamp(event.getTimestamp())
                     .setData(event.getPayload())
                     .build();
 
-            sensorsSnapshotAvro.getSensorsState().put(event.getId(), stateAvro);
-            sensorsSnapshotAvro.setTimestamp(Instant.ofEpochSecond(event.getTimestamp().getEpochSecond(), event.getTimestamp().getNano()));
+            sensorsSnapshotAvro.getSensorsState().put(event.getId(), newState);
+            sensorsSnapshotAvro.setTimestamp(event.getTimestamp());
 
             kafkaTemplate.send(snapshotTopic, sensorsSnapshotAvro.getHubId(), sensorsSnapshotAvro).whenComplete((result, ex) -> {
                 if (ex == null) {
