@@ -1,18 +1,5 @@
 spring:
-  kafka:
-    bootstrap-servers: "localhost:9092"
-    producer:
-      key-serializer: "org.apache.kafka.common.serialization.StringSerializer"
-      value-serializer: "ru.practicum.avro.serialization.AvroSerializer"
-    consumer:
-      group-id: "telemetry-group"
-      key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
-      value-deserializer: "ru.practicum.avro.deserialization.SensorEventDeserializer"
-
-topic:
-  hub-event: "telemetry.hubs.v1"
-  sensor-event: "telemetry.sensors.v1"
-
-grpc:
-  server:
-    port: 59091
+  application:
+    name: collector
+  config:
+    import: configserver:http://localhost:8888
