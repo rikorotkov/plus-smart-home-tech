@@ -1,5 +1,5 @@
 server:
-  port: 8888
+  port: 0
 spring:
   application:
     name: config-server
@@ -11,3 +11,8 @@ spring:
         native:
           search-locations:
             - classpath:config/telemetry/{application}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
