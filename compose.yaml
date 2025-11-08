@@ -48,3 +48,18 @@ services:
       timeout: 5s
       interval: 5s
       retries: 10
+
+  commerce-db:
+    image: postgres:16.1
+    container_name: commerce-db
+    ports:
+      - "6543:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=shopping_store
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
