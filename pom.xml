@@ -21,7 +21,7 @@
         <module>commerce</module>
         <module>infra/config-server</module>
         <module>infra/discovery-server</module>
-        <module>commerce/shopping-store</module>
+        <module>commerce/interaction-api</module>
     </modules>
 
     <properties>
