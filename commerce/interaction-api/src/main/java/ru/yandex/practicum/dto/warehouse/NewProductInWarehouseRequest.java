@@ -15,7 +15,4 @@ public class NewProductInWarehouseRequest {
 
     @DecimalMin("1.0")
     private Double weight;
-
-    @DecimalMin("1")
-    private Integer quantity;
 }

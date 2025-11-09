@@ -9,8 +9,10 @@ import lombok.Data;
 public class BookedProductsDto {
     @NotNull
     private Double deliveryWeight;
+
     @NotNull
     private Double deliveryVolume;
+
     @NotNull
     private Boolean fragile;
 }

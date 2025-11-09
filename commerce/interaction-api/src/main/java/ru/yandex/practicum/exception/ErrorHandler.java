@@ -14,10 +14,13 @@ public class ErrorHandler {
 
     @ExceptionHandler
     public ResponseEntity<Map<String, String>> handleFeignException(final FeignException e) {
-        return ResponseEntity.status(e.status())
-                .body(Map.of("type", e.getClass().getName(),
-                        "message", e.getMessage(),
-                        "cause", e.getCause().toString()));
+        Map<String, String> responseBody = Map.of(
+                "type", e.getClass().getSimpleName(),
+                "message", e.getMessage(),
+                "status", String.valueOf(e.status())
+        );
+
+        return ResponseEntity.status(e.status()).body(responseBody);
     }
 
     @ExceptionHandler
@@ -29,9 +32,11 @@ public class ErrorHandler {
             throw new NotAuthorizedUserException(401, e.getMessage());
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("type", e.getClass().getName(),
-                        "message", e.getMessage(),
-                        "cause", e.getCause().toString()));
+        Map<String, String> responseBody = Map.of(
+                "type", e.getClass().getSimpleName(),
+                "message", e.getMessage()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
     }
 }

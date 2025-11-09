@@ -19,6 +19,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     private final WarehouseClient warehouseClient;
@@ -32,7 +33,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                         .username(username)
                         .isActive(true)
                         .build());
-        log.info("ShoppingCart {}", shoppingCart);
+        log.info("get ShoppingCart {}", shoppingCart);
         return mapper.toDto(shoppingCart);
     }
 
@@ -50,7 +51,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         warehouseClient.checkProducts(mapper.toDto(shoppingCart));
 
         shoppingCartRepository.save(shoppingCart);
-        log.info("addProductToCart ShoppingCart {}", shoppingCart);
+        log.info("add products to ShoppingCart {}", shoppingCart);
         return mapper.toDto(shoppingCart);
     }
 
@@ -60,7 +61,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart shoppingCart = shoppingCartRepository.findByUsername(username).orElseThrow();
         shoppingCart.setIsActive(Boolean.FALSE);
         shoppingCartRepository.save(shoppingCart);
-        log.info("deactivateCartByUsername ShoppingCart {}", shoppingCart);
+        log.info("deactivate ShoppingCart {}", username);
     }
 
     @Override
@@ -76,7 +77,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             }
         }
         shoppingCartRepository.save(shoppingCart);
-        log.info("deleteProductByUsername ShoppingCart {}", shoppingCart);
+        log.info("delete ShoppingCart {}", shoppingCart);
         return mapper.toDto(shoppingCart);
     }
 
@@ -95,7 +96,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         warehouseClient.checkProducts(mapper.toDto(shoppingCart));
 
         shoppingCartRepository.save(shoppingCart);
-        log.info("changeProductQuantity ShoppingCart {}", shoppingCart);
+        log.info("change quantity ShoppingCart {}", shoppingCart);
         return mapper.toDto(shoppingCart);
     }
 }
