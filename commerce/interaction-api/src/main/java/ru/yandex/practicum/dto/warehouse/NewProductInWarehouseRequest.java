@@ -8,8 +8,14 @@ import java.util.UUID;
 @Data
 public class NewProductInWarehouseRequest {
     private UUID productId;
+
     private Boolean fragile;
+
     private DimensionDto dimension;
+
     @DecimalMin("1.0")
     private Double weight;
+
+    @DecimalMin("1")
+    private Integer quantity;
 }
