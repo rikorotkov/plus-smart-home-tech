@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
@@ -31,5 +32,5 @@ public class ProductDto {
 
     @NotNull
     @DecimalMin("1.0")
-    private Double price;
+    private BigDecimal price;
 }
