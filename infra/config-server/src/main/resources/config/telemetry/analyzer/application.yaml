@@ -1,0 +1,21 @@
+topic:
+  snapshot: "telemetry.snapshots.v1"
+  hub-event: "telemetry.hubs.v1"
+
+spring:
+  datasource:
+    driver-class-name: "org.postgresql.Driver"
+    url: "jdbc:postgresql://localhost:5433/postgres"
+    username: "postgres"
+    password: "postgres"
+  sql:
+    init:
+      mode: always
+
+grpc:
+  client:
+    hub-router:
+      enableKeepAlive: 'true'
+      address: static://localhost:59090
+      keepAliveWithoutCalls: 'true'
+      negotiationType: plaintext

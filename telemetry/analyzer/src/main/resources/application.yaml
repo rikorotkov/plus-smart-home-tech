@@ -1,21 +1,15 @@
-topic:
-  snapshot: "telemetry.snapshots.v1"
-  hub-event: "telemetry.hubs.v1"
-
 spring:
-  datasource:
-    driver-class-name: "org.postgresql.Driver"
-    url: "jdbc:postgresql://localhost:5433/postgres"
-    username: "postgres"
-    password: "postgres"
-  sql:
-    init:
-      mode: always
+  application:
+    name: analyzer
+  config:
+    import: "configserver:"
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: config-server
 
-grpc:
+eureka:
   client:
-    hub-router:
-      enableKeepAlive: 'true'
-      address: static://localhost:59090
-      keepAliveWithoutCalls: 'true'
-      negotiationType: plaintext
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname:localhost}:${eureka.instance.port:8761}/eureka/
