@@ -1,0 +1,22 @@
+server:
+  port: 0
+
+spring:
+  datasource:
+    driver-class-name: "org.postgresql.Driver"
+    url: "jdbc:postgresql://localhost:6543/shopping_order"
+    username: "postgres"
+    password: "postgres"
+  sql:
+    init:
+      mode: always
+
+delivery:
+  base-price: 5.0
+  fragile-k: 0.2
+  weight-k: 0.3
+  volume-k: 0.2
+  address-k: 0.2
+  warehouse-address:
+    address1: 1
+    address2: 2

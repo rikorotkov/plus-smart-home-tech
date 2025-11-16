@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.dto.cart.ShoppingCartDto;
-import ru.yandex.practicum.dto.warehouse.AddProductToWarehouseRequest;
-import ru.yandex.practicum.dto.warehouse.AddressDto;
-import ru.yandex.practicum.dto.warehouse.BookedProductsDto;
-import ru.yandex.practicum.dto.warehouse.NewProductInWarehouseRequest;
+import ru.yandex.practicum.dto.warehouse.*;
+
+import java.util.Map;
+import java.util.UUID;
 
 @FeignClient(name = "warehouse", path = "/api/v1/warehouse")
 public interface WarehouseClient {
@@ -27,4 +27,13 @@ public interface WarehouseClient {
 
     @GetMapping("/address")
     AddressDto getAddress() throws FeignException;
+
+    @PostMapping("/shipped")
+    void shipProductsToDelivery(@RequestBody ShippedToDeliveryRequest request) throws FeignException;
+
+    @PostMapping("/return")
+    void returnProducts(Map<UUID, Integer> products) throws FeignException;
+
+    @PostMapping("/assembly")
+    BookedProductsDto assembleOrder(@RequestBody AssemblyProductsForOrderRequest request) throws FeignException;
 }
