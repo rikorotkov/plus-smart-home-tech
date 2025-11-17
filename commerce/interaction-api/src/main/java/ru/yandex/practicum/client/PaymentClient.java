@@ -10,7 +10,7 @@ import ru.yandex.practicum.dto.payment.PaymentDto;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-@FeignClient(name = "payment-service", path = "api/v1/payment")
+@FeignClient(name = "payment", path = "api/v1/payment")
 public interface PaymentClient {
     @PostMapping
     PaymentDto createPayment(@RequestBody OrderDto orderDto) throws FeignException;

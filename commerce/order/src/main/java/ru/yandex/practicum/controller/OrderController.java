@@ -21,73 +21,73 @@ public class OrderController implements OrderClient {
 
     @Override
     @GetMapping
-    public Page<OrderDto> getOrders(String username, Pageable pageable) {
+    public Page<OrderDto> getOrders(@RequestParam String username, Pageable pageable) {
         return orderService.getOrders(username, pageable);
     }
 
     @Override
     @PutMapping
-    public OrderDto createOrder(CreateNewOrderRequest request) {
+    public OrderDto createOrder(@RequestBody CreateNewOrderRequest request) {
         return orderService.createOrder(request);
     }
 
     @Override
     @PostMapping("/return")
-    public OrderDto returnOrder(ProductReturnRequest request) {
+    public OrderDto returnOrder(@RequestBody ProductReturnRequest request) {
         return orderService.returnOrder(request);
     }
 
     @Override
     @PostMapping("/payment")
-    public OrderDto payOrder(UUID orderId) {
+    public OrderDto payOrder(@RequestBody UUID orderId) {
         return orderService.payOrder(orderId);
     }
 
     @Override
     @PostMapping("/payment/failed")
-    public OrderDto failOrderPayment(UUID orderId) {
+    public OrderDto failOrderPayment(@RequestBody UUID orderId) {
         return orderService.failOrderPayment(orderId);
     }
 
     @Override
     @PostMapping("/delivery")
-    public OrderDto deliverOrder(UUID orderId) {
+    public OrderDto deliverOrder(@RequestBody UUID orderId) {
         return orderService.deliverOrder(orderId);
     }
 
     @Override
     @PostMapping("/delivery/failed")
-    public OrderDto failedDeliverOrder(UUID orderId) {
+    public OrderDto failedDeliverOrder(@RequestBody UUID orderId) {
         return orderService.failedDeliverOrder(orderId);
     }
 
     @Override
     @PostMapping("/completed")
-    public OrderDto completeOrder(UUID orderId) {
+    public OrderDto completeOrder(@RequestBody UUID orderId) {
         return orderService.completeOrder(orderId);
     }
 
     @Override
     @PostMapping("/calculate/total")
-    public OrderDto calculateTotal(UUID orderId) {
+    public OrderDto calculateTotal(@RequestBody UUID orderId) {
         return orderService.calculateTotal(orderId);
     }
 
     @Override
     @PostMapping("/calculate/delivery")
-    public OrderDto calculateDelivery(UUID orderId) {
+    public OrderDto calculateDelivery(@RequestBody UUID orderId) {
         return orderService.calculateDelivery(orderId);
     }
 
     @Override
     @PostMapping("/assembly")
-    public OrderDto assembleOrder(UUID orderId) {
+    public OrderDto assembleOrder(@RequestBody UUID orderId) {
         return orderService.assembleOrder(orderId);
     }
 
     @Override
     @PostMapping("/assembly/failed")
-    public OrderDto assembleOrderFailed(UUID orderId) {
+    public OrderDto assembleOrderFailed(@RequestBody UUID orderId) {
         return orderService.assembleOrderFailed(orderId);
     }
 }

@@ -76,6 +76,8 @@ public class OrderServiceImpl implements OrderService {
         saved.setPaymentId(payment.getPaymentId());
         saved.setState(OrderState.ON_PAYMENT);
 
+        orderRepository.save(saved);
+
         log.info("Order created: {}", saved);
         return orderMapper.toDto(saved);
     }

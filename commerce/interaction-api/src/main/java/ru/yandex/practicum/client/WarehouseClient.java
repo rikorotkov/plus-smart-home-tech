@@ -1,7 +1,6 @@
 package ru.yandex.practicum.client;
 
 import feign.FeignException;
-import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

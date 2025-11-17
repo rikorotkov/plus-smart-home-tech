@@ -10,7 +10,7 @@ import ru.yandex.practicum.dto.delivery.DeliveryDto;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-@FeignClient(name = "delivery-service", path = "api/v1/delivery")
+@FeignClient(name = "delivery", path = "api/v1/delivery")
 public interface DeliveryClient {
     @PutMapping
     DeliveryDto addDelivery(@RequestBody DeliveryDto deliveryDto) throws FeignException;

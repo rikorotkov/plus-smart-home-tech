@@ -12,7 +12,7 @@ import ru.yandex.practicum.dto.order.ProductReturnRequest;
 
 import java.util.UUID;
 
-@FeignClient(name = "order-service", path = "api/v1/order")
+@FeignClient(name = "order", path = "api/v1/order")
 public interface OrderClient {
     @GetMapping
     Page<OrderDto> getOrders(@RequestParam @NotBlank String username, Pageable pageable) throws FeignException;
