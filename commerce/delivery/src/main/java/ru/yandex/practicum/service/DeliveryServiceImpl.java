@@ -55,34 +55,36 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     public void completeDelivery(UUID orderId) {
         Delivery delivery = deliveryRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new NoDeliveryFoundException(404, "Delivery id=" + orderId + "not found"));
+                .orElseThrow(() -> new NoDeliveryFoundException(404, "Delivery id=" + orderId + " not found"));
+
         delivery.setDeliveryState(DeliveryState.DELIVERED);
 
         orderClient.deliverOrder(orderId);
 
         deliveryRepository.save(delivery);
+        log.info("Delivery completed: {}", delivery);
     }
 
     @Override
     public void pickDelivery(UUID orderId) {
         Delivery delivery = deliveryRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new NoDeliveryFoundException(404, "Delivery id=" + orderId + "not found"));
+                .orElseThrow(() -> new NoDeliveryFoundException(404, "Delivery id=" + orderId + " not found"));
+
         delivery.setDeliveryState(DeliveryState.IN_PROGRESS);
 
-        orderClient.deliverOrder(orderId);
         warehouseClient.shipProductsToDelivery(ShippedToDeliveryRequest.builder()
                 .deliveryId(delivery.getDeliveryId())
                 .orderId(orderId)
                 .build());
 
-        log.info("Delivery piked: {}", delivery);
+        log.info("Delivery picked: {}", delivery);
         deliveryRepository.save(delivery);
     }
 
     @Override
     public void failDelivery(UUID orderId) {
         Delivery delivery = deliveryRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new NoDeliveryFoundException(404, "Delivery id=" + orderId + "not found"));
+                .orElseThrow(() -> new NoDeliveryFoundException(404, "Delivery id=" + orderId + " not found"));
         delivery.setDeliveryState(DeliveryState.FAILED);
 
         orderClient.failedDeliverOrder(orderId);
