@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.client.WarehouseClient;
 import ru.yandex.practicum.dto.cart.ShoppingCartDto;
-import ru.yandex.practicum.dto.warehouse.AddProductToWarehouseRequest;
-import ru.yandex.practicum.dto.warehouse.AddressDto;
-import ru.yandex.practicum.dto.warehouse.BookedProductsDto;
-import ru.yandex.practicum.dto.warehouse.NewProductInWarehouseRequest;
+import ru.yandex.practicum.dto.warehouse.*;
 import ru.yandex.practicum.service.WarehouseService;
+
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/warehouse")
@@ -38,5 +38,20 @@ public class WarehouseController implements WarehouseClient {
     @Override
     public AddressDto getAddress() {
         return warehouseService.getAddress();
+    }
+
+    @Override
+    public void shipProductsToDelivery(ShippedToDeliveryRequest request) {
+        warehouseService.shipProducts(request);
+    }
+
+    @Override
+    public void returnProducts(Map<UUID, Integer> products) {
+        warehouseService.returnProducts(products);
+    }
+
+    @Override
+    public BookedProductsDto assembleOrder(AssemblyProductsForOrderRequest request) {
+        return warehouseService.assembleOrder(request);
     }
 }
